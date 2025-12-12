@@ -2,28 +2,43 @@ using ciberpaz_api.Context;
 using ciberpaz_api.Services;
 using Microsoft.EntityFrameworkCore;
 
+var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+// Crear builder
 var builder = WebApplication.CreateBuilder(args);
 
-// crear variable para la cadena de conexion
-var connectionString = builder.Configuration.GetConnectionString("Connection");
-//registrar servicio para la conexion
-builder.Services.AddDbContext<AppDbContext>(
-    options => options.UseSqlServer(connectionString)
+// Configuración (permitir appsettings.Production.json)
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false)
+    .AddJsonFile($"appsettings.{environment}.json", optional: true)
+    .AddEnvironmentVariables();
+
+// Obtener cadena de conexión correcta
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Registrar DbContext con PostgreSQL
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(connectionString)
 );
 
+// JSON: enums como texto
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Servicios propios
 builder.Services.AddScoped<ImageService>();
 
+// Construir app
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Swagger solo en desarrollo
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -31,14 +46,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
 
-// Static files as images
+// Archivos estáticos
 app.UseStaticFiles();
 
 app.MapControllers();
 
+// Render requiere escuchar en PORT
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 app.Urls.Add($"http://0.0.0.0:{port}");
 
