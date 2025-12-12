@@ -15,5 +15,12 @@ namespace ciberpaz_api.Context
         public DbSet<Paragraph> Paragraphs { get; set; }
         public DbSet<Section> Sections { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<View>().ToTable("views");
+            modelBuilder.Entity<Section>().ToTable("sections");
+            modelBuilder.Entity<Paragraph>().ToTable("paragraphs");
+            modelBuilder.Entity<MenuItem>().ToTable("menuitem");
+        }
     }
 }
