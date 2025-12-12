@@ -1,6 +1,7 @@
 using ciberpaz_api.Context;
 using ciberpaz_api.Services;
 using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
