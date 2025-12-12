@@ -1,0 +1,91 @@
+## Build artifacts
+bin/
+obj/
+
+## User-specific files
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+
+## Visual Studio
+.vs/
+
+## Visual Studio Code
+.vscode/
+
+## Logs
+*.log
+logs/
+Log/
+Logs/
+
+## .NET core / SDK
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## ASP.NET Identity / Secrets
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.json
+
+## Publish output
+publish/
+dist/
+out/
+
+## Packages
+*.nupkg
+*.snupkg
+packages/
+
+## Environment files
+.env
+.env.*
+
+## Rider / JetBrains
+.idea/
+
+## Coverage
+coverage/
+*.coverage
+*.coveragexml
+
+## Swagger generated files
+swagger.json
+swagger.yaml
+openapi.json
+openapi.yaml
+swagger/
+openapi/
+
+## Temporary files
+*.tmp
+*.temp
+*.cache
+*.db
+*.TestResults
+TestResults/
+
+## Certificates
+*.pfx
+*.p12
+*.pem
+*.cer
+*.crt
+*.key
+
+## ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+## Docker
+docker-compose.override.yml
+docker-compose.*.yml
+docker_data/
+
+## Misc
+Thumbs.db
+Desktop.ini
