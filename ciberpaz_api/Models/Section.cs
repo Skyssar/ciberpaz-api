@@ -8,15 +8,17 @@ namespace ciberpaz_api.Models
 
         [MaxLength(100)]
         public string? Title { get; set; }
+
+        [Required]
         public required string Content { get; set; }
         public string? Image { get; set; }
 
         public string? Link { get; set; }
 
         // Llave foránea
-        public required int ViewId { get; set; }
+        public required int AppViewId { get; set; }
 
         // Navigation property
-        public View? View { get; set; }
+        public AppView? AppView { get; set; }
     }
 }

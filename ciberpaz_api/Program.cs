@@ -1,6 +1,7 @@
 using ciberpaz_api.Context;
 using ciberpaz_api.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
@@ -31,7 +32,32 @@ builder.Services.AddControllers()
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+    {
+        Description = "API Key needed to access endpoints",
+        Type = SecuritySchemeType.ApiKey,
+        Name = "X-API-KEY",
+        In = ParameterLocation.Header
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "ApiKey"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
 
 // Servicios propios
 builder.Services.AddScoped<ImageService>();
@@ -62,6 +88,6 @@ using (var scope = app.Services.CreateScope())
 
 // Render requiere escuchar en PORT
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-app.Urls.Add($"http://0.0.0.0:{port}");
+//app.Urls.Add($"http://0.0.0.0:{port}");
 
 app.Run();

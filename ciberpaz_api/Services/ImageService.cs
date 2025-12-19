@@ -8,6 +8,7 @@ namespace ciberpaz_api.Services
     {
         private readonly IWebHostEnvironment _env = env;
 
+        /* Save Image */
         public async Task<string?> SaveImageAsync(IFormFile? file, string folder)
         {
             // Validar archivo
@@ -33,22 +34,19 @@ namespace ciberpaz_api.Services
             return $"{folder}/{fileName}";
         }
 
+        /* Update Image */
         public async Task<string?> UpdateImageAsync(IFormFile? file, string? currentFile, string folder)
         {
             // Si viene nueva imagen, reemplazarla
-            if (file == null || file.Length == 0) return null;
+            if (file == null || file.Length == 0) return currentFile;
 
             // ----- ELIMINAR LA ANTERIOR -----
             if (!string.IsNullOrEmpty(currentFile))
             {
                 // Sacar el nombre del archivo desde la URL guardada en BD
-                string oldFileName = Path.GetFileName(currentFile);
-
-                // Ruta física del viejo archivo
-                string oldFilePath = Path.Combine(_env.WebRootPath, folder, oldFileName);
-
-                if (System.IO.File.Exists(oldFilePath))
-                    System.IO.File.Delete(oldFilePath);
+                var oldPath = Path.Combine(_env.WebRootPath, currentFile.TrimStart('/'));
+                if (System.IO.File.Exists(oldPath))
+                    System.IO.File.Delete(oldPath);
             }
 
             // ----- GUARDAR LA NUEVA -----
@@ -67,15 +65,15 @@ namespace ciberpaz_api.Services
             return $"{folder}/{newFileName}";
         }
 
-        public void DeleteImage(string? file, string folder)
+        /* Delete Image */
+        public void DeleteImage(string? fileName)
         {
         // ===== BORRAR IMAGEN =====
-            if (!string.IsNullOrEmpty(file))
+            if (!string.IsNullOrEmpty(fileName))
             {
-                // "https:dominio../icons/imagen.png"
-                string fileName = Path.GetFileName(file); // imagen.png
+                
 
-                string filePath = Path.Combine(_env.WebRootPath, folder, fileName);
+                string filePath = Path.Combine(_env.WebRootPath, fileName);
 
                 if (System.IO.File.Exists(filePath))
                 {

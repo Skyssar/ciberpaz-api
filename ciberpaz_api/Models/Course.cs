@@ -2,16 +2,17 @@
 
 namespace ciberpaz_api.Models
 {
-    public class View
+    public class Course
     {
         public int Id { get; set; }
-        
-        [MaxLength(100)]
+
+        [Required]
+        [MaxLength(200)]
         public required string Title { get; set; }
+
         public string? Image { get; set; }
 
-        // Relación uno a muchos
-        public ICollection<Section>? Sections { get; set; }
-        public ICollection<Paragraph>? Paragraphs { get; set; }
+        public string? Description { get; set; }
+        public string? Link { get; set; }
     }
 }

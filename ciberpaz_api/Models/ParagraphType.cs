@@ -2,8 +2,8 @@
 {
     public enum ParagraphType
     {
-        Text = 0,
-        Title = 1,
-        ListItem = 2
+        text = 0,
+        title = 1,
+        listitem = 2
     }
 }

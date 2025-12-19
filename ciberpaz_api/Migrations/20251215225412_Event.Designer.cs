@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ciberpaz_api.Context;
@@ -11,9 +12,11 @@ using ciberpaz_api.Context;
 namespace ciberpaz_api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251215225412_Event")]
+    partial class Event
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,33 +109,6 @@ namespace ciberpaz_api.Migrations
                     b.ToTable("appviews", (string)null);
                 });
 
-            modelBuilder.Entity("ciberpaz_api.Models.Course", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Image")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Link")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("courses", (string)null);
-                });
-
             modelBuilder.Entity("ciberpaz_api.Models.Event", b =>
                 {
                     b.Property<int>("Id")
@@ -141,8 +117,9 @@ namespace ciberpaz_api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset>("Date")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<string>("Date")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Image")
                         .HasColumnType("text");
@@ -307,32 +284,6 @@ namespace ciberpaz_api.Migrations
                     b.HasIndex("HomeId");
 
                     b.ToTable("viewitem", (string)null);
-                });
-
-            modelBuilder.Entity("ciberpaz_api.Models.Volunteer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
-
-                    b.Property<int?>("Phone")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("volunteers", (string)null);
                 });
 
             modelBuilder.Entity("ciberpaz_api.DTOs.ViewItemDto", b =>

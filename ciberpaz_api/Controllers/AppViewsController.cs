@@ -6,6 +6,7 @@ using Humanizer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,21 +16,24 @@ namespace ciberpaz_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ViewsController(AppDbContext context, ImageService imageService) : ControllerBase
+    public class AppViewsController(AppDbContext context, ImageService imageService) : ControllerBase
     {
         private readonly AppDbContext _context = context;
         private readonly ImageService _imageService = imageService;
 
         // GET: api/Views
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ViewListDto>>> GetViews()
+        public async Task<ActionResult<IEnumerable<AppViewListDto>>> GetViews()
         {
-            var views = await _context.Views
-                .Select(v => new ViewListDto
+            string baseUrl = $"{Request.Scheme}://{Request.Host}";
+
+            var views = await _context.AppViews
+                .Select(v => new AppViewListDto
                 {
                     Id = v.Id,
                     Title = v.Title,
-                    Image = v.Image
+                    Image = $"{baseUrl}/{v.Image}",
+                    Route = v.Route,
                 })
                 .ToListAsync();
 
@@ -38,9 +42,9 @@ namespace ciberpaz_api.Controllers
 
         // GET: api/Views/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ViewDto>> GetView(int id)
+        public async Task<ActionResult<AppViewDto>> GetView(int id)
         {
-            var view = await _context.Views
+            var view = await _context.AppViews
                 .Include(v => v.Sections)
                 .Include(v => v.Paragraphs)
                 .FirstOrDefaultAsync(v => v.Id == id);
@@ -48,17 +52,20 @@ namespace ciberpaz_api.Controllers
             if (view == null)
                 return NotFound();
 
-            var dto = new ViewDto
+            string baseUrl = $"{Request.Scheme}://{Request.Host}";
+
+            var dto = new AppViewDto
             {
                 Id = view.Id,
                 Title = view.Title,
-                Image = view.Image,
+                Image = $"{baseUrl}/{view.Image}",
+                Route = view.Route,
                 Sections = view.Sections?.Select(s => new SectionDto
                 {
                     Id = s.Id,
                     Title = s.Title,
                     Content = s.Content,
-                    Image = s.Image,
+                    Image = $"{baseUrl}/{s.Image}",
                     Link = s.Link
                 }).ToList(),
                 Paragraphs = view.Paragraphs?.Select(p => new ParagraphDto
@@ -75,9 +82,9 @@ namespace ciberpaz_api.Controllers
         // PUT: api/Views/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromForm] ViewUpdateDto dto)
+        public async Task<IActionResult> Update(int id, [FromForm] AppViewUpdateDto dto)
         {
-            var view = await _context.Views.FindAsync(id);
+            var view = await _context.AppViews.FindAsync(id);
             if (view == null)
                 return NotFound();
 
@@ -85,16 +92,12 @@ namespace ciberpaz_api.Controllers
             if (!string.IsNullOrEmpty(dto.Title))
                 view.Title = dto.Title;
 
+            if (!string.IsNullOrEmpty(dto.Route))
+                view.Route = dto.Route;
+
             var newImagePath = await _imageService.UpdateImageAsync(dto.Image, view.Image, "images");
 
-            if (newImagePath == null)
-                return BadRequest("Debe enviar una imagen");
-
-            // Construir la nueva URL pública
-            string baseUrl = $"{Request.Scheme}://{Request.Host}";
-            string newFileUrl = $"{baseUrl}/{newImagePath}";
-
-            view.Image = newFileUrl;
+            view.Image = newImagePath;
             
             // Guardar cambios
             await _context.SaveChangesAsync();
@@ -105,7 +108,7 @@ namespace ciberpaz_api.Controllers
         // POST: api/Views
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<IActionResult> CreateView([FromForm] ViewCreateDto dto)
+        public async Task<IActionResult> CreateView([FromForm] AppViewCreateDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -115,17 +118,14 @@ namespace ciberpaz_api.Controllers
             if (imagePath == null)
                 return BadRequest("Debe enviar una imagen");
 
-            // Construir URL pública para guardar en BD
-            string baseUrl = $"{Request.Scheme}://{Request.Host}";
-            string fileUrl = $"{baseUrl}/{imagePath}";
-
-            var view = new View
+            var view = new AppView
             {
                 Title = dto.Title,
-                Image = fileUrl
+                Image = imagePath,
+                Route = dto.Route,
             };
 
-            _context.Views.Add(view);
+            _context.AppViews.Add(view);
             await _context.SaveChangesAsync();
 
             return Ok(view);
@@ -135,15 +135,15 @@ namespace ciberpaz_api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteView(int id)
         {
-            var view = await _context.Views.FindAsync(id);
+            var view = await _context.AppViews.FindAsync(id);
             if (view == null)
                 return NotFound();
 
             // ===== BORRAR IMAGEN =====
-            _imageService.DeleteImage(view.Image, "images");
+            _imageService.DeleteImage(view.Image);
 
             // ===== BORRAR REGISTRO =====
-            _context.Views.Remove(view);
+            _context.AppViews.Remove(view);
             await _context.SaveChangesAsync();
 
             return NoContent();

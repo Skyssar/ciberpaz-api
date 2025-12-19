@@ -1,4 +1,6 @@
-﻿namespace ciberpaz_api.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ciberpaz_api.Models
 {
     public class Paragraph
     {
@@ -6,10 +8,11 @@
 
         public ParagraphType Type { get; set; }
 
+        [Required]
         public required string Content { get; set; }
 
         // Llave foránea
-        public required int ViewId { get; set; }
+        public required int AppViewId { get; set; }
 
     }
 }

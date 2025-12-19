@@ -90,7 +90,7 @@ namespace ciberpaz_api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateSection([FromForm] SectionCreateDto dto)
         {
-            var view = await _context.Views.FindAsync(dto.ViewId);
+            var view = await _context.AppViews.FindAsync(dto.ViewId);
             if (view == null)
                 return NotFound("View not found");
 
@@ -102,7 +102,7 @@ namespace ciberpaz_api.Controllers
                 Content = dto.Content,
                 Image = imagePath,
                 Link = dto.Link,
-                ViewId = dto.ViewId
+                AppViewId = dto.ViewId
             };
 
             _context.Sections.Add(section);
