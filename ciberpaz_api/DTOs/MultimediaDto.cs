@@ -26,4 +26,10 @@ namespace ciberpaz_api.DTOs
         public IFormFile? Icon { get; set; }
         public string? Link { get; set; }
     }
+
+    public class MultimediaByTypeDto
+    {
+        public MultimediaType Type { get; set; }
+        public List<MultimediaDto> Multimedia { get; set; } = [];
+    }
 }

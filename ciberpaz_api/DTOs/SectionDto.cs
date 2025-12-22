@@ -7,7 +7,7 @@
         public IFormFile? Image { get; set; }
         public string? Link { get; set; }
 
-        public required int ViewId { get; set; }
+        public required int AppViewId { get; set; }
     }
 
     public class SectionUpdateDto
@@ -17,7 +17,7 @@
         public IFormFile? Image { get; set; }
         public string? Link { get; set; }
 
-        public required int ViewId { get; set; }
+        public required int AppViewId { get; set; }
     }
 
     public class SectionDto
@@ -27,7 +27,7 @@
         public required string Content { get; set; }
         public string? Image { get; set; }
         public string? Link { get; set; }
-
+        public int AppViewId { get; set; }
 
     }
 }

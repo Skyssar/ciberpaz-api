@@ -48,49 +48,59 @@ namespace ciberpaz_api.Controllers
                 Title = section.Title,
                 Content = section.Content,
                 Image = section.Image,
-                Link = section.Link
+                Link = section.Link, 
+                AppViewId = section.AppViewId
             };
 
             return dto;
         }
 
         // PUT: api/Sections/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutSection(int id, Section section)
+        [ApiKey]
+        [HttpPatch("{id}")]
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult> UpdateSection(int id, [FromForm] SectionUpdateDto dto)
         {
-            if (id != section.Id)
-            {
-                return BadRequest();
+            var item = await _context.Sections
+           .FirstOrDefaultAsync(v => v.Id == id);
+
+            if (item == null)
+                return NotFound();
+
+            if (dto.Title != null)
+                item.Title = dto.Title;
+
+            if (dto.Content != null){
+                item.Content = dto.Content;
             }
 
-            _context.Entry(section).State = EntityState.Modified;
+            if (dto.Link != null)
+                item.Link = dto.Link;
+            
+            item.Image = await _imageService.UpdateImageAsync(dto.Image, item.Image, "images");
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SectionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            // Guardar cambios
+            await _context.SaveChangesAsync();
 
-            return NoContent();
+            var response = new SectionDto
+            {
+                Id = item.Id,
+                Title = item.Title,
+                Content = item.Content,
+                Image = item.Image,
+                Link = item.Link,
+                AppViewId = item.AppViewId
+            };
+
+            return Ok(response);
         }
-
+      
         // POST: api/Sections
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<IActionResult> CreateSection([FromForm] SectionCreateDto dto)
         {
-            var view = await _context.AppViews.FindAsync(dto.ViewId);
+            var view = await _context.AppViews.FindAsync(dto.AppViewId);
             if (view == null)
                 return NotFound("View not found");
 
@@ -102,13 +112,23 @@ namespace ciberpaz_api.Controllers
                 Content = dto.Content,
                 Image = imagePath,
                 Link = dto.Link,
-                AppViewId = dto.ViewId
+                AppViewId = dto.AppViewId
             };
 
             _context.Sections.Add(section);
             await _context.SaveChangesAsync();
 
-            return Ok(section);
+            var response = new SectionDto
+            {
+                Id = section.Id,
+                Title = section.Title,
+                Content = section.Content,
+                Image = section.Image,
+                Link = section.Link,
+                AppViewId = section.AppViewId
+            };
+
+            return CreatedAtAction(nameof(GetSection), new { id = section.Id }, response);
         }
 
         // DELETE: api/Sections/5

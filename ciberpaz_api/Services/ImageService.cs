@@ -37,7 +37,7 @@ namespace ciberpaz_api.Services
         /* Update Image */
         public async Task<string?> UpdateImageAsync(IFormFile? file, string? currentFile, string folder)
         {
-            // Si viene nueva imagen, reemplazarla
+            // Si no viene nueva imagen, dejarla
             if (file == null || file.Length == 0) return currentFile;
 
             // ----- ELIMINAR LA ANTERIOR -----

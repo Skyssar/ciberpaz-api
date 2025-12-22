@@ -60,6 +60,12 @@ namespace ciberpaz_api.Controllers
                 Title = view.Title,
                 Image = $"{baseUrl}/{view.Image}",
                 Route = view.Route,
+                Paragraphs = view.Paragraphs?.Select(p => new ParagraphDto
+                {
+                    Id = p.Id,
+                    Type = p.Type,
+                    Content = p.Content
+                }).ToList(),
                 Sections = view.Sections?.Select(s => new SectionDto
                 {
                     Id = s.Id,
@@ -67,13 +73,8 @@ namespace ciberpaz_api.Controllers
                     Content = s.Content,
                     Image = $"{baseUrl}/{s.Image}",
                     Link = s.Link
-                }).ToList(),
-                Paragraphs = view.Paragraphs?.Select(p => new ParagraphDto
-                {
-                    Id = p.Id,
-                    Type = p.Type,
-                    Content = p.Content
                 }).ToList()
+
             };
 
             return dto;

@@ -29,20 +29,29 @@ namespace ciberpaz_api.Controllers
 
         // GET: api/Multimedia
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MultimediaDto>>> GetMultimedias()
+        public async Task<ActionResult<IEnumerable<MultimediaByTypeDto>>> GetMultimediaGroupedByType()
         {
-            var views = await _context.Multimedias
-                .Select(v => new MultimediaDto
-                {
-                    Id = v.Id,
-                    Title = v.Title,
-                    Type = v.Type,
-                    Icon = v.Icon,
-                    Link = v.Link,
-                })
-                .ToListAsync();
+            string baseUrl = $"{Request.Scheme}://{Request.Host}";
 
-            return views;
+            var result = await _context.Multimedias
+            .AsNoTracking()
+            .GroupBy(e => e.Type)
+            .Select(g => new MultimediaByTypeDto
+            {
+                Type = g.Key,
+                Multimedia = g.Select(e => new MultimediaDto
+                {
+                    Id = e.Id,
+                    Title = e.Title,
+                    Type = e.Type,
+                    Icon = $"{baseUrl}/{e.Icon}",
+                    Link = e.Link
+                }).ToList()
+            })
+            .OrderBy(g => g.Type)
+            .ToListAsync();
+
+            return Ok(result);
         }
 
         // GET: api/Multimedia/5
