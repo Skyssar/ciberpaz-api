@@ -10,7 +10,7 @@ namespace ciberpaz_api.DTOs
 
         public string Email { get; set; } = null!;
 
-        public int? Phone { get; set; }
+        public String? Phone { get; set; }
     }
 
     public class VolunteerUpdateCreateDto
@@ -24,6 +24,6 @@ namespace ciberpaz_api.DTOs
         [EmailAddress]
         public string Email { get; set; } = null!;
 
-        public int? Phone { get; set; }
+        public String? Phone { get; set; }
     }
 }

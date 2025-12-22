@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace ciberpaz_api.Controllers
@@ -39,8 +40,7 @@ namespace ciberpaz_api.Controllers
 
         // POST: api/Volunteers
         [HttpPost]
-        [Consumes("multipart/form-data")]
-        public async Task<ActionResult> CreateVolunteer([FromForm] VolunteerUpdateCreateDto dto)
+        public async Task<ActionResult> CreateVolunteer([FromBody] VolunteerUpdateCreateDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -60,8 +60,7 @@ namespace ciberpaz_api.Controllers
 
         // PUT: api/Volunteers/5
         [HttpPut("{id}")]
-        [Consumes("multipart/form-data")]
-        public async Task<ActionResult> UpdateVolunteer(int id, [FromForm] VolunteerUpdateCreateDto dto)
+        public async Task<ActionResult> UpdateVolunteer(int id, [FromBody] VolunteerUpdateCreateDto dto)
         {
             var item = await _context.Volunteers
            .FirstOrDefaultAsync(v => v.Id == id);

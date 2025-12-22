@@ -14,6 +14,6 @@ namespace ciberpaz_api.Models
         [MaxLength(100)]
         [EmailAddress]
         public required string Email { get; set; }
-        public int? Phone { get; set; }
+        public String? Phone { get; set; }
     }
 }

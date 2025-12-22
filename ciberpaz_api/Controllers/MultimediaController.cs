@@ -32,26 +32,34 @@ namespace ciberpaz_api.Controllers
         public async Task<ActionResult<IEnumerable<MultimediaByTypeDto>>> GetMultimediaGroupedByType()
         {
             string baseUrl = $"{Request.Scheme}://{Request.Host}";
+            // 1️⃣ Todos los tipos posibles del enum
+            var allTypes = Enum.GetValues<MultimediaType>();
 
-            var result = await _context.Multimedias
-            .AsNoTracking()
-            .GroupBy(e => e.Type)
-            .Select(g => new MultimediaByTypeDto
-            {
-                Type = g.Key,
-                Multimedia = g.Select(e => new MultimediaDto
+            // 2️⃣ Eventos existentes
+            var items = await _context.Multimedias
+                .AsNoTracking()
+                .ToListAsync();
+
+            // 3️⃣ Construcción del resultado (incluye tipos vacíos)
+            var result = allTypes
+                .Select(type => new MultimediaByTypeDto
                 {
-                    Id = e.Id,
-                    Title = e.Title,
-                    Type = e.Type,
-                    Icon = $"{baseUrl}/{e.Icon}",
-                    Link = e.Link
-                }).ToList()
-            })
-            .OrderBy(g => g.Type)
-            .ToListAsync();
+                    Type = type,   // hackaton, festival, other
+                    Multimedia = [.. items
+                        .Where(e => e.Type == type)
+                        .Select(e => new MultimediaDto
+                        {
+                            Id = e.Id,
+                            Title = e.Title,
+                            Type = e.Type,
+                            Icon = $"{baseUrl}/{e.Icon}",
+                            Link = e.Link
+                        })]
+                })
+                .ToList();
 
             return Ok(result);
+        
         }
 
         // GET: api/Multimedia/5
